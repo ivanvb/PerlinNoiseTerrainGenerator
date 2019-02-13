@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="noise.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="550"></canvas>
+</body>
+
+<script>
+
+var canvas = document.getElementById('gameCanvas');
+var canvasContext = canvas.getContext('2d');
+
+var regionWidth = 3;
+
+var selected = new Array();
+
+var dynamic = 0.25;
+
+var multiplier;
+
+var change = 0;
+
+var vainas = new Array();
+
+window.onload
+{
+    var seed = Math.floor(Math.random() * (62000));
+    noise.seed(seed);
+    setInterval(mainLoop, 1000/60);
+}
+
+function mainLoop()
+{
+    drawCanvas();
+    drawGrid();
+    drawPoints();
+}
+
+function drawCanvas()
+{
+    draw(0, 0, canvas.width, canvas.height, 'black');
+    canvas.addEventListener('mousedown', md, false);
+}
+
+function draw(posx, posy, width, height, color)
+{
+    canvasContext.fillStyle = color;
+    canvasContext.fillRect(posx, posy, width, height);
+}
+
+function drawGrid()
+{
+    
+    for(var i = 0; i < canvas.width; i+= regionWidth)
+    {
+        draw(i, 0, 1, canvas.height, 'grey');
+    }
+
+    for(var i = 0; i < canvas.height; i+= regionWidth)
+    {
+        draw(0, i, canvas.width, 1, 'grey');
+    }
+
+    var max = 0;
+    var min = 9999;
+
+    var arr = new Array();
+    var f = 0;
+    
+
+    for(var i = (0 + change); i < (canvas.width + change); i+= regionWidth)
+    {
+        for(var j = 0; j < canvas.height; j+= regionWidth)
+        {
+            
+            var noisy = noise.perlin2(i/100, j/100);
+
+            if(noisy > max)
+            {
+                max = noisy;
+            }
+
+            if(noisy < min)
+            {
+                min = noisy;
+            }
+            
+            if(noisy <= 0.15)
+            {
+                draw(i-change, j, regionWidth, regionWidth, 'blue');
+            }
+            else if(noisy <= 0.3)
+            {
+                draw(i-change, j, regionWidth, regionWidth, 'lemonchiffon');
+            }
+            else if(noisy <= 0.4)
+            {
+                draw(i-change, j, regionWidth, regionWidth, 'lightgreen');
+            }
+            else
+            {
+                draw(i-change, j, regionWidth, regionWidth, 'green');
+            }
+           
+        }
+        
+        f= 1;
+        arr.push(noise.perlin2(i/100, 0/100));
+    }
+
+    vainas.push(arr);
+
+    change += regionWidth;
+   // console.log(max, min);
+
+    dynamic += 0.001;
+}
+
+function drawPoints()
+{
+    
+    for(var i = 0; i < selected.length; i++)
+    {
+        draw(selected[i][0], selected[i][1], regionWidth,regionWidth,'grey');
+    }
+}
+
+function md(event)
+{
+    xpos = (Math.ceil(event.pageX/regionWidth)*regionWidth) - regionWidth;
+    ypos = (Math.ceil(event.pageY/regionWidth)*regionWidth) - regionWidth;
+    console.log(event.pageX, event.pageY);
+    console.log(xpos, ypos);
+
+    selected.push([xpos, ypos]);
+}
+</script>

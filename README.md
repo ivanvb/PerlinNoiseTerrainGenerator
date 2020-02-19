@@ -3,3 +3,4 @@ Javascript program that generates random terrain using [Perlin Noise's](https://
 
 The Perlin Noise implementation is from [here](https://github.com/josephg/noisejs)
 
+You can look at the project checking [this url](https://ivb98.github.io/PerlinNoiseTerrainGenerator/)
